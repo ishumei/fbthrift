@@ -11,15 +11,15 @@ install_mstch() {
   pushd .
   git clone https://github.com/no1msd/mstch
   cd mstch
-  cmake .
-  make
+  cmake . -DCMAKE_INSTALL_PREFIX=${TOOLCHAIN_INSTALL_PATH}
+  make -j$(nproc)
   sudo make install
   popd
 }
 
 install_folly() {
   pushd .
-  git clone https://github.com/facebook/folly
+  git clone https://github.com/ishumei/folly
   cd folly/folly
   FOLLY_VERSION="$(cat "$BUILD_DIR"/FOLLY_VERSION)"  # on own line for set -e
   git checkout "$FOLLY_VERSION"
@@ -29,8 +29,8 @@ install_folly() {
     "./build/deps_$1.sh"
   fi
   autoreconf -if
-  ./configure
-  make
+  ./configure --enable-follytestmain --with-boost-libdir=${TOOLCHAIN_INSTALL_PATH}/lib --prefix=${TOOLCHAIN_INSTALL_PATH}
+  make -j$(nproc)
   sudo make install
   sudo ldconfig
   popd
@@ -42,8 +42,8 @@ install_wangle() {
   cd wangle/wangle
   WANGLE_VERSION="$(cat "$BUILD_DIR"/WANGLE_VERSION)"
   git checkout "$WANGLE_VERSION"
-  cmake .
-  make
+  cmake . -DCMAKE_INSTALL_PREFIX=${TOOLCHAIN_INSTALL_PATH}
+  make -j$(nproc)
   sudo make install
   popd
 }
